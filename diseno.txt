@@ -1,0 +1,90 @@
+client.h
+
+apiclient.h
+
+bool ocupyTable(int id);
+bool freeTable(int id);
+char[100] tablesStatus();
+bool reserveTable(int id);
+int checkTable(int id);
+
+struct Datagram {
+	int opcode;
+	void* params;
+}
+
+--- IDA ---
+
+struct ocupyTableArgs {
+	int id;
+}
+
+struct freeTableArgs {
+	int id;
+}
+
+struct ReserveTableArgs {
+	int id;
+}
+
+struct CheckTableArgs {
+	int id;
+}
+
+
+// para tablesStatus() params es null
+
+-------------
+
+--- VUELTA ---
+
+struct ocupyTableReturnArgs {
+	int id;
+	bool status;
+}
+
+struct freeTableReturnArgs {
+	int id;
+	bool status;
+}
+
+struct ReserveTableReturnArgs {
+	int id;
+	bool status;
+}
+
+struct CheckTableReturnArgs {
+	int id;
+	int tableStatus;
+}
+
+struct TablesStatusReturnArgs {
+	char[100] tablesStatus;
+}
+
+------
+
+typedef enum {OCUPY_TABLE,FREE_TABLE, RESERVE_TABLE, CHECK_TABLE, TABLES_STATUS} Opcodes;
+
+
+apiserver.h
+
+void parse();
+void parseOpcode(void* buffer);
+
+server.h
+
+bool ocupyTable(int id);
+bool freeTable(int id);
+char[100] tablesStatus();
+bool reserveTable(int id);
+int checkTable(int id);
+
+
+Base De Datos
+
+[{
+	id: ,
+	status: ,
+},{..}]
+
