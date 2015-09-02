@@ -39,7 +39,7 @@ check_table(int id)
 	send_client_packet(&pckt_req);
 	pk_receive(pid, &pckt_ans, sizeof Packet);
 
-	return pckt_ans.ans_check_table.status;
+	return pckt_ans.data.ans_check_table.status;
 }
 
 TableStatus *
@@ -52,7 +52,7 @@ check_tables()
 	send_client_packet(&pckt_req);
 	pk_receive((int) getpid(), &pckt_ans, sizeof Packet);
 
-	return pckt_ans.ans_check_tables.status;
+	return pckt_ans.data.ans_check_tables.status;
 }
 
 bool
@@ -66,7 +66,7 @@ occupy_table(int id)
 	send_client_packet(&pckt_req);
 	pk_receive((int) getpid(), &pckt_ans, sizeof Packet);
 
-	return pckt_ans.ans_occupy_table.result;
+	return pckt_ans.data.ans_occupy_table.result;
 }
 
 bool
@@ -80,7 +80,7 @@ free_table(int id)
 	send_client_packet(&pckt_req);
 	pk_receive((int) getpid(), &pckt_ans, sizeof Packet);
 
-	return pckt_ans.ans_free_table.result;
+	return pckt_ans.data.ans_free_table.result;
 }
 
 bool
@@ -94,5 +94,5 @@ reserve_table(int id)
 	send_client_packet(&pckt_req);
 	pk_receive((int) getpid(), &pckt_ans, sizeof Packet);
 
-	return pckt_ans.ans_reserve_table.result;
+	return pckt_ans.data.ans_reserve_table.result;
 }

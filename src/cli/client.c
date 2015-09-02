@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include <cliapi.h>
 
+#define WELCOME_MSG			"Insert your command (0 for help): "
 #define SUCCESS_MSG			"Success.\n"
 #define ERROR_MSG			"Error.\n"
+#define TABLE_STATUS_MSG	"Table %d: %s\n"
 #define INVALID_COMMAND_MSG	"Invalid command.\n"
 #define CHECK_TABLE_MSG		"Check the table: "
 #define OCCUPY_TABLE_MSG	"Occupy the table: "
 #define FREE_TABLE_MSG		"Free the table: "
 #define RESERVE_TABLE_MSG	"Reserver the table: "
-#define TABLE_STATUS_MSG	"Table %d: %s\n"
+
+#define HELP	-1
 
 static const char * status_msg[4];
 status_msg[NON_EXISTENT] = "Non-existent";
@@ -16,10 +19,36 @@ status_msg[AVAILABLE] = "Available";
 status_msg[RESERVED] = "Reserved";
 status_msg[OCCUPIED] = "Occupied";
 
+static const char * help_msg[] = {
+	"(0) Help\n",
+	"(1) Check table status\n",
+	"(2) Check tables status\n",
+	"(3) Occupy a table\n",
+	"(4) Free a table\n",
+	"(5) Reserve a table\n",
+};
+
+static int
+read_id(void)
+{
+	int id;
+
+	// Read until the first signed decimal integer
+	while (scanf("%d", &id) == 1);
+
+	return id;
+}
+
 void
 process_command(int cmd)
 {
-	switch (cmd) {
+	// substract 1 to use enum values defined for commands in comm.h
+	// and to execute help with 0
+	switch (cmd - 1) {
+		case HELP:
+			cli_help();
+			break;
+
 		case CHECK_TABLE:
 			cli_check_table();
 			break;
@@ -47,12 +76,21 @@ process_command(int cmd)
 }
 
 void
+cli_help(void)
+{
+	int n = sizeof help_msg, i;
+
+	for (i = 0; i < n; i++)
+		printf(help_msg[i]);
+}
+
+void
 cli_check_table(void)
 {
 	int id;
 
 	printf(CHECK_TABLE_MSG);
-	// TODO get id from stdin
+	id = read_id();
 	TableStatus status = check_table(id);
 	printf(TABLE_STATUS_MSG, id, status_msg[status]);
 }
@@ -75,7 +113,7 @@ cli_occupy_table(void)
 	bool result;
 
 	printf(OCCUPY_TABLE_MSG);
-	// TODO get id from stdin
+	id = read_id();
 	result = occupy_table(id);
 
 	if (result)
@@ -91,7 +129,7 @@ cli_free_table(void)
 	bool result;
 
 	printf(FREE_TABLE_MSG);
-	// TODO get id from stdin
+	id = read_id();
 	result = free_table(id);
 
 	if (result)
@@ -107,7 +145,7 @@ cli_reserve_table(void)
 	bool result;
 
 	printf(RESERVE_TABLE_MSG);
-	// TODO get id from stdin
+	id = read_id();
 	result = reserve_table(id);
 
 	if (result)
@@ -124,5 +162,13 @@ cli_invalid_command(void) {
 int
 main()
 {
+	int cmd;
 
+	while (1) {
+		cmd = 0; // default to help
+
+		printf(WELCOME_MSG);
+		scanf("%d\n", &cmd);
+		process_command(cmd);
+	}
 }
