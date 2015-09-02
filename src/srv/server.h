@@ -1,6 +1,8 @@
 
-#ifndef _CLIAPI_H_
-#define _CLIAPI_H_
+#ifndef _SERVER_H_
+#define _SERVER_H_
+
+#define DB_PATH     "db.csv"
 
 /**
  *	Check the status of the table
@@ -9,13 +11,6 @@
  *	@return	The status of the specified table
  */
 int check_table(int id);
-
-/**
- *	Get the status of all the tables
- *
- *	@return	IDEA return array of ints
- */
-char *check_tables();
 
 /**
  *	Occupy a table if it's not occupied
@@ -40,5 +35,12 @@ bool free_table(int id);
  *	@return	False whenever the specified table is already reserved
  */
 bool reserve_table(int id);
+
+/**
+ *	Get the status of all the tables
+ *
+ *	@return	IDEA return array of ints
+ */
+char* tables_status();
 
 #endif
