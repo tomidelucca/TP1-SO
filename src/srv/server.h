@@ -1,6 +1,8 @@
 
-#ifndef _CLIAPI_H_
-#define _CLIAPI_H_
+#ifndef _SERVER_H_
+#define _SERVER_H_
+
+#define DB_PATH     "db.csv"
 
 /**
  *	Check the status of the table
@@ -8,14 +10,14 @@
  *	@param	id ID of the table
  *	@return	The status of the specified table
  */
-int check_table(int id);
+TableStatus check_table(int id);
 
 /**
  *	Get the status of all the tables
  *
- *	@return	IDEA return array of ints
+ *	@return	array of status
  */
-char *check_tables();
+TableStatus *tables_status();
 
 /**
  *	Occupy a table if it's not occupied
