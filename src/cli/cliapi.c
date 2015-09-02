@@ -66,7 +66,7 @@ occupy_table(int id)
 	send_client_packet(&pckt_req);
 	pk_receive((int) getpid(), &pckt_ans, sizeof Packet);
 
-	return pckt_ans.data.ans_occupy_table.result;
+	return pckt_ans.data.ans_occupy_table.success;
 }
 
 bool
@@ -80,7 +80,7 @@ free_table(int id)
 	send_client_packet(&pckt_req);
 	pk_receive((int) getpid(), &pckt_ans, sizeof Packet);
 
-	return pckt_ans.data.ans_free_table.result;
+	return pckt_ans.data.ans_free_table.success;
 }
 
 bool
@@ -94,5 +94,5 @@ reserve_table(int id)
 	send_client_packet(&pckt_req);
 	pk_receive((int) getpid(), &pckt_ans, sizeof Packet);
 
-	return pckt_ans.data.ans_reserve_table.result;
+	return pckt_ans.data.ans_reserve_table.success;
 }

@@ -10,7 +10,14 @@
  *	@param	id ID of the table
  *	@return	The status of the specified table
  */
-int check_table(int id);
+TableStatus check_table(int id);
+
+/**
+ *	Get the status of all the tables
+ *
+ *	@return	array of status
+ */
+TableStatus *tables_status();
 
 /**
  *	Occupy a table if it's not occupied
@@ -35,12 +42,5 @@ bool free_table(int id);
  *	@return	False whenever the specified table is already reserved
  */
 bool reserve_table(int id);
-
-/**
- *	Get the status of all the tables
- *
- *	@return	IDEA return array of ints
- */
-char* tables_status();
 
 #endif

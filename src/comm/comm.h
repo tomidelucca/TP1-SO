@@ -39,17 +39,17 @@ typedef struct {
 
 typedef struct {
 	int id;
-	bool result;
+	bool success;
 } OccupyTableAns;
 
 typedef struct {
 	int id;
-	bool result;
+	bool success;
 } FreeTableAns;
 
 typedef struct {
 	int id;
-	bool result;
+	bool success;
 } ReserveTableAns;
 
 typedef union {

@@ -110,13 +110,13 @@ void
 cli_occupy_table(void)
 {
 	int id;
-	bool result;
+	bool success;
 
 	printf(OCCUPY_TABLE_MSG);
 	id = read_id();
-	result = occupy_table(id);
+	success = occupy_table(id);
 
-	if (result)
+	if (success)
 		printf(SUCCESS_MSG);
 	else
 		printf(ERROR_MSG);
@@ -126,13 +126,13 @@ void
 cli_free_table(void)
 {
 	int id;
-	bool result;
+	bool success;
 
 	printf(FREE_TABLE_MSG);
 	id = read_id();
-	result = free_table(id);
+	success = free_table(id);
 
-	if (result)
+	if (success)
 		printf(SUCCESS_MSG);
 	else
 		printf(ERROR_MSG);
@@ -142,13 +142,13 @@ void
 cli_reserve_table(void)
 {
 	int id;
-	bool result;
+	bool success;
 
 	printf(RESERVE_TABLE_MSG);
 	id = read_id();
-	result = reserve_table(id);
+	success = reserve_table(id);
 
-	if (result)
+	if (success)
 		printf(SUCCESS_MSG);
 	else
 		printf(ERROR_MSG);
