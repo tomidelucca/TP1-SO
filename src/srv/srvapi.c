@@ -1,6 +1,29 @@
 
-#include <srvapi.h>
-#include <comm.h>
+#include "include/srvapi.h"
+#include "include/server.h"
+#include "include/comm.h"
+
+int
+main(void)
+{
+	Packet pckt_req, pckt_ans;
+
+	while (1) {
+		// Receive requests and create workers
+		pk_receive(SRV_ID, &pckt_req, sizeof Packet);
+		// TODO spawn worker to process the received packet
+		int pid = fork();
+
+		if (pid == 0) {
+			// child
+			process_command(&pckt_req, &pckt_ans);
+			pk_send(pckt_req.pid, &pckt_ans, sizeof Packet);
+			exit(0);
+		}
+	}
+
+	return 0;
+}
 
 void
 process_request(Packet * pckt_req, Packet * pckt_ans)

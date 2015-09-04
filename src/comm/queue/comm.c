@@ -1,5 +1,5 @@
 
-#include <comm.h>
+#include "include/comm.h"
 
 void
 pk_send(int id, Packet * pckt, int nbytes)
@@ -10,5 +10,5 @@ pk_send(int id, Packet * pckt, int nbytes)
 void
 pk_receive(int id, Packet * pckt, int nbytes)
 {
-	// TODO	
+	// TODO
 }

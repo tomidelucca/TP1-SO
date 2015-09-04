@@ -17,7 +17,7 @@ TableStatus check_table(int id);
  *
  *	@return	array of status
  */
-TableStatus *tables_status();
+TableStatus *tables_status(void);
 
 /**
  *	Occupy a table if it's not occupied

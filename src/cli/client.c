@@ -1,5 +1,7 @@
+
 #include <stdio.h>
-#include <cliapi.h>
+
+#include "include/cliapi.h"
 
 #define WELCOME_MSG			"Insert your command (0 for help): "
 #define SUCCESS_MSG			"Success.\n"
