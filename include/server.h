@@ -2,6 +2,10 @@
 #ifndef _SERVER_H_
 #define _SERVER_H_
 
+#include <stdbool.h>
+
+#include "include/comm.h"
+
 #define DB_PATH     "db.csv"
 
 /**
@@ -13,11 +17,11 @@
 TableStatus check_table(int id);
 
 /**
- *	Get the status of all the tables
+ *	Get the status of all the tables and store them in `status`
  *
- *	@return	array of status
+ *	@return An array of status
  */
-TableStatus *tables_status(void);
+void tables_status(TableStatus * status);
 
 /**
  *	Occupy a table if it's not occupied

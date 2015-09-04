@@ -15,20 +15,31 @@
 
 #define HELP	-1
 
-static const char * status_msg[4];
-status_msg[NON_EXISTENT] = "Non-existent";
-status_msg[AVAILABLE] = "Available";
-status_msg[RESERVED] = "Reserved";
-status_msg[OCCUPIED] = "Occupied";
-
-static const char * help_msg[] = {
-	"(0) Help\n",
-	"(1) Check table status\n",
-	"(2) Check tables status\n",
-	"(3) Occupy a table\n",
-	"(4) Free a table\n",
-	"(5) Reserve a table\n",
+static const char * status_msg[] = {
+	"Non-existent",
+	"Available",
+	"Reserved",
+	"Occupied"
 };
+
+static const char * help_msg[6] = {
+	"(0) Help",
+	"(1) Check table status",
+	"(2) Check tables status",
+	"(3) Occupy a table",
+	"(4) Free a table",
+	"(5) Reserve a table",
+};
+
+static int read_id(void);
+static void process_command(int);
+static void cli_help(void);
+static void cli_check_table(void);
+static void cli_check_tables(void);
+static void cli_occupy_table(void);
+static void cli_reserve_table(void);
+static void cli_free_table(void);
+static void cli_invalid_command(void);
 
 static int
 read_id(void)
@@ -36,12 +47,12 @@ read_id(void)
 	int id;
 
 	// Read until the first signed decimal integer
-	while (scanf("%d", &id) == 1);
+	while (scanf("%d", &id) != 1);
 
 	return id;
 }
 
-void
+static void
 process_command(int cmd)
 {
 	// substract 1 to use enum values defined for commands in comm.h
@@ -77,16 +88,16 @@ process_command(int cmd)
 	}
 }
 
-void
+static void
 cli_help(void)
 {
-	int n = sizeof help_msg, i;
+	int n = sizeof(help_msg) / sizeof(char *), i;
 
 	for (i = 0; i < n; i++)
-		printf(help_msg[i]);
+		printf("%s\n", help_msg[i]);
 }
 
-void
+static void
 cli_check_table(void)
 {
 	int id;
@@ -97,18 +108,18 @@ cli_check_table(void)
 	printf(TABLE_STATUS_MSG, id, status_msg[status]);
 }
 
-void
+static void
 cli_check_tables(void)
 {
 	int i;
-	TableStatus tables[MAX_TABLES];
+	TableStatus status[MAX_TABLES];
 
-	tables = check_tables();
+	check_tables(status);
 	for (i = 0; i < MAX_TABLES; i++)
-		printf(TABLE_STATUS_MSG, id, status_msg[status]);
+		printf(TABLE_STATUS_MSG, i, status_msg[status[i]]);
 }
 
-void
+static void
 cli_occupy_table(void)
 {
 	int id;
@@ -124,7 +135,7 @@ cli_occupy_table(void)
 		printf(ERROR_MSG);
 }
 
-void
+static void
 cli_free_table(void)
 {
 	int id;
@@ -140,7 +151,7 @@ cli_free_table(void)
 		printf(ERROR_MSG);
 }
 
-void
+static void
 cli_reserve_table(void)
 {
 	int id;
@@ -156,7 +167,7 @@ cli_reserve_table(void)
 		printf(ERROR_MSG);
 }
 
-void
+static void
 cli_invalid_command(void) {
 	printf(INVALID_COMMAND_MSG);
 }
@@ -170,7 +181,7 @@ main()
 		cmd = 0; // default to help
 
 		printf(WELCOME_MSG);
-		scanf("%d\n", &cmd);
+		scanf("%d", &cmd);
 		process_command(cmd);
 	}
 }

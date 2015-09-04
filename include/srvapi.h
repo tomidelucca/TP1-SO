@@ -2,6 +2,8 @@
 #ifndef _SRVAPI_H_
 #define _SRVAPI_H_
 
+#include "include/comm.h"
+
 /**
  *	Process the request and store the result into pckt_ans
  *

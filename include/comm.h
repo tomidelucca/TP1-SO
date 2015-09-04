@@ -2,6 +2,8 @@
 #ifndef _COMM_H_
 #define _COMM_H_
 
+#include <stdbool.h>
+
 #define SRV_ID		0
 #define MAX_TABLES 	10
 
@@ -34,7 +36,7 @@ typedef struct {
 } CheckTableAns;
 
 typedef struct {
-	TableStatus[MAX_TABLES] status;
+	TableStatus status[MAX_TABLES];
 } CheckTablesAns;
 
 typedef struct {

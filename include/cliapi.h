@@ -2,20 +2,24 @@
 #ifndef _CLIAPI_H_
 #define _CLIAPI_H_
 
+#include <stdbool.h>
+
+#include "include/comm.h"
+
 /**
  *	Check the status of the table
  *
  *	@param	id ID of the table
  *	@return	The status of the specified table
  */
-int check_table(int id);
+TableStatus check_table(int id);
 
 /**
- *	Get the status of all the tables
+ *	Get the status of all the tables and store them in `status`
  *
- *	@return	IDEA return array of ints
+ *	@return An array of status
  */
-char *check_tables();
+void check_tables(TableStatus * status);
 
 /**
  *	Occupy a table if it's not occupied
