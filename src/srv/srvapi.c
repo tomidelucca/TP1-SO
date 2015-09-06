@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "include/srvapi.h"
 #include "include/server.h"
@@ -16,16 +18,16 @@ main(void)
 		// Receive requests and create workers
 		pk_receive(SRV_ID, &pckt_req, sizeof(pckt_req));
 		// TODO spawn worker to process the received packet
-		int pid = fork();
+		int pid = fork(), status;
 
 		if (pid == 0) {
 			// child
-			sleep(5);
 			process_request(&pckt_req, &pckt_ans);
+			sleep(5);
 			pk_send(pckt_req.pid, &pckt_ans, sizeof(pckt_ans));
 			exit(0);
 		} else {
-			wait();
+			wait(&status);
 		}
 	}
 

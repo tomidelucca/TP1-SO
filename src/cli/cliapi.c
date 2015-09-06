@@ -1,6 +1,8 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "include/cliapi.h"
 #include "include/comm.h"
