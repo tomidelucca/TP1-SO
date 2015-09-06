@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -9,26 +10,24 @@
 #include "include/server.h"
 #include "include/comm.h"
 
+static void spawn_worker(Packet *);
+
 int
 main(void)
 {
 	Packet pckt_req, pckt_ans;
 
-	while (1) {
-		// Receive requests and create workers
-		pk_receive(SRV_ID, &pckt_req, sizeof(pckt_req));
-		// TODO spawn worker to process the received packet
-		int pid = fork(), status;
+	struct sigaction sigchld_action = {
+		.sa_handler = SIG_DFL,
+		.sa_flags = SA_NOCLDWAIT
+	};
 
-		if (pid == 0) {
-			// child
-			process_request(&pckt_req, &pckt_ans);
-			sleep(5);
-			pk_send(pckt_req.pid, &pckt_ans, sizeof(pckt_ans));
-			exit(0);
-		} else {
-			wait(&status);
-		}
+	sigaction(SIGCHLD, &sigchld_action, NULL);
+
+	while (1) {
+		// Receive requests and spawn workers
+		pk_receive(SRV_ID, &pckt_req, sizeof(pckt_req));
+		spawn_worker(&pckt_req);
 	}
 
 	return 0;
@@ -74,5 +73,23 @@ process_request(Packet * pckt_req, Packet * pckt_ans)
 		default:
 			// TODO unknown operation code
 			break;
+	}
+}
+
+static void
+spawn_worker(Packet * pckt_req)
+{	
+	Packet pckt_ans;
+
+	int pid = fork();
+	if (pid == 0) {
+		process_request(pckt_req, &pckt_ans);
+		sleep(5);
+		pk_send(pckt_req->pid, &pckt_ans, sizeof(pckt_ans));
+	} else if (pid > 0) {
+		// Do nothing, wait not needed because
+		// sigaction set for SIGCHILD
+	} else {
+		// TODO handle error
 	}
 }
