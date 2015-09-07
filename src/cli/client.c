@@ -176,6 +176,8 @@ int
 main()
 {
 	int cmd;
+	
+	init_client();
 
 	while (1) {
 		cmd = 0; // default to help

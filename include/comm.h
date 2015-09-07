@@ -93,4 +93,14 @@ void pk_receive(int id, Packet * pckt, int nbytes);
  */
 void pk_send(int id, Packet * pckt, int nbytes);
 
+/**
+ *	Initialize client connection
+ */
+void init_client();
+
+/**
+ *	Initialize server connection
+ */
+void init_server();
+
 #endif

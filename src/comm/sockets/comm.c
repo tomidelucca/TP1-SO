@@ -1,5 +1,4 @@
 
-#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
@@ -20,20 +19,14 @@ typedef struct {
 	unsigned long checksum;
 } UdpPacket;
 
-static void init_server(void);
-static void init_client(void);
 static unsigned long djb2_hash(const char *, int);
 
-static bool established_connection = false;
 static int sockfd;
 static struct sockaddr_in srvaddr, cliaddr;
 
 void
 pk_send(int id, Packet * pckt, int nbytes)
 {
-	if (!established_connection)
-		(id == SRV_ID) ? init_client() : init_server();
-
 	UdpPacket udp_pckt;
 	memcpy(&(udp_pckt.pckt), pckt, sizeof(Packet));
 	udp_pckt.checksum = djb2_hash((char *) pckt, sizeof(Packet));	
@@ -48,9 +41,6 @@ void
 pk_receive(int id, Packet * pckt, int nbytes)
 {
 	int n, len;
-
-	if (!established_connection)
-		(id == SRV_ID) ? init_server() : init_client();
 
 	UdpPacket udp_pckt;
 	
@@ -71,7 +61,7 @@ pk_receive(int id, Packet * pckt, int nbytes)
 	}	
 }
 
-static void
+void
 init_server(void)
 {
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0); // open udp socket
@@ -83,14 +73,12 @@ init_server(void)
 	srvaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	srvaddr.sin_port = htons(SRV_PORT);
 
-	if (bind(sockfd, (struct sockaddr *) &srvaddr, sizeof srvaddr) != -1)
-		established_connection = true; // flag the connection
-	else
+	if (bind(sockfd, (struct sockaddr *) &srvaddr, sizeof srvaddr) == -1)
 		printf("Error binding socket. (%d)\n", errno);
 }
 
 
-static void
+void
 init_client(void)
 {
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0); // open udp socket
@@ -101,8 +89,6 @@ init_client(void)
 	srvaddr.sin_family = AF_INET;
 	srvaddr.sin_port = htons(SRV_PORT);
 	srvaddr.sin_addr.s_addr = inet_addr(SRV_IP);
-
-	established_connection = true; // flag the connection
 }
 
 /**

@@ -24,6 +24,8 @@ main(void)
 
 	sigaction(SIGCHLD, &sigchld_action, NULL);
 
+	init_server();
+
 	while (1) {
 		// Receive requests and spawn workers
 		pk_receive(SRV_ID, &pckt_req, sizeof(pckt_req));
