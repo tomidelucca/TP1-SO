@@ -177,7 +177,9 @@ main()
 {
 	int cmd;
 	
-	init_client();
+	// If client communication can't initialize, end client
+	if (init_client() == -1)
+		return 1;
 
 	while (1) {
 		cmd = 0; // default to help
@@ -186,4 +188,6 @@ main()
 		scanf("%d", &cmd);
 		process_command(cmd);
 	}
+
+	return 0;
 }

@@ -12,34 +12,6 @@
 
 static void spawn_worker(Packet *);
 
-int
-main(void)
-{
-	ssize_t n;
-	Packet pckt_req;
-
-	struct sigaction sigchld_action = {
-		.sa_handler = SIG_DFL,
-		.sa_flags = SA_NOCLDWAIT
-	};
-
-	sigaction(SIGCHLD, &sigchld_action, NULL);
-
-	printf("Starting server...\n");
-	init_server();
-	printf("Server started succesfully.\n");
-
-	while (1) {
-		// Receive requests and spawn workers
-		n = pk_receive(SRV_ID, &pckt_req, sizeof(pckt_req));
-		printf("%d bytes received\n", n);
-
-		spawn_worker(&pckt_req);
-	}
-
-	return 0;
-}
-
 void
 process_request(Packet * pckt_req, Packet * pckt_ans)
 {
@@ -47,7 +19,6 @@ process_request(Packet * pckt_req, Packet * pckt_ans)
 	bool success;
 	TableStatus status, nstatus[MAX_TABLES];
 
-	printf("Command [%d] received\n", pckt_req->opcode);
 
 	switch (pckt_req->opcode) {
 		case CHECK_TABLE:
@@ -90,9 +61,12 @@ spawn_worker(Packet * pckt_req)
 
 	int pid = fork();
 	if (pid == 0) {
+		printf("Processing command [%d]...\n", pckt_req->opcode);
 		process_request(pckt_req, &pckt_ans);
-		sleep(0);
+
+		sleep(10);
 		pk_send(pckt_req->pid, &pckt_ans, sizeof(pckt_ans));
+		printf("Answer sent.\n");
 	} else if (pid > 0) {
 		// Do nothing, wait not needed because
 		// sigaction set for SIGCHILD
@@ -100,3 +74,35 @@ spawn_worker(Packet * pckt_req)
 		// TODO handle error
 	}
 }
+
+int
+main(void)
+{
+	ssize_t n;
+	Packet pckt_req;
+
+	struct sigaction sigchld_action = {
+		.sa_handler = SIG_DFL,
+		.sa_flags = SA_NOCLDWAIT
+	};
+	// Avoid having to wait for child processes to exit
+	sigaction(SIGCHLD, &sigchld_action, NULL);
+
+	printf("Starting server...\n");
+	if (init_server() == -1) {
+		printf("Error initializing server.\n");
+		return 1;
+	}
+	printf("Server started succesfully.\n");
+
+	while (1) {
+		// Receive requests and spawn workers
+		n = pk_receive(SRV_ID, &pckt_req, sizeof(pckt_req));
+		printf("%d byte/s received...\n", n);
+	
+		spawn_worker(&pckt_req);
+	}
+
+	return 0;
+}
+

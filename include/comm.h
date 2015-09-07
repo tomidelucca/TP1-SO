@@ -95,12 +95,14 @@ int pk_send(int id, Packet * pckt, int nbytes);
 
 /**
  *	Initialize client connection
+ *	@return -1 on failure
  */
-void init_client();
+int init_client();
 
 /**
  *	Initialize server connection
+ *	@return -1 on failure
  */
-void init_server();
+int init_server();
 
 #endif

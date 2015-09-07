@@ -68,34 +68,44 @@ pk_receive(int id, Packet * pckt, int nbytes)
 	return n;
 }
 
-void
+int
 init_server(void)
 {
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0); // open udp socket
-	if (sockfd == -1)
+	if (sockfd == -1) {
 		printf("Error opening udp server socket. (%d)\n", errno);
+		return -1;
+	}
 
 	bzero(&srvaddr, sizeof srvaddr);
 	srvaddr.sin_family = AF_INET;
 	srvaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	srvaddr.sin_port = htons(SRV_PORT);
 
-	if (bind(sockfd, (struct sockaddr *) &srvaddr, sizeof srvaddr) == -1)
+	if (bind(sockfd, (struct sockaddr *) &srvaddr, sizeof srvaddr) == -1) {
 		printf("Error binding socket. (%d)\n", errno);
+		return -1;
+	}
+
+	return 0;
 }
 
 
-void
+int
 init_client(void)
 {
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0); // open udp socket
-	if (sockfd == -1)
+	if (sockfd == -1) {
 		printf("Error opening udp client socket. (%d)\n", errno);
+		return -1;
+	}
 
 	bzero(&srvaddr, sizeof srvaddr);
 	srvaddr.sin_family = AF_INET;
 	srvaddr.sin_port = htons(SRV_PORT);
 	srvaddr.sin_addr.s_addr = inet_addr(SRV_IP);
+
+	return 0;
 }
 
 /**
