@@ -7,35 +7,45 @@
 #include "include/srvapi.h"
 #include "include/comm.h"
 
-TableStatus
-check_table(int id)
+int
+check_table(int id, TableStatus * status)
 {
-	return AVAILABLE;
+	*status = AVAILABLE;
+
+	return 0;
 }
 
-void
+int
 check_tables(TableStatus * status)
 {
 	int n;
 
 	for (n = 0; n < MAX_TABLES; n++)
 		status[n] = AVAILABLE;
+	
+	return 0;
 }
 
-bool
-occupy_table(int id)
+int
+occupy_table(int id, bool *success)
 {
-	return true;
+	*success = true;
+	
+	return 0;
 }
 
-bool
-free_table(int id)
+int
+free_table(int id, bool *success)
 {
-	return true;
+	*success = true;
+
+	return 0;
 }
 
-bool
-reserve_table(int id)
+int
+reserve_table(int id, bool *success)
 {
-	return true;
+	*success = true;
+
+	return 0;
 }

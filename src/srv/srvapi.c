@@ -22,30 +22,38 @@ process_request(Packet * pckt_req, Packet * pckt_ans)
 
 	switch (pckt_req->opcode) {
 		case CHECK_TABLE:
-			pckt_ans->data.ans_check_table.status =
-					check_table(pckt_req->data.req_check_table.id);
+			check_table(
+				pckt_req->data.req_check_table.id,
+				&(pckt_ans->data.ans_check_table.status)
+			);
 			break;
 
 		case CHECK_TABLES:
 			check_tables(nstatus);
-			for (i = 0; i < MAX_TABLES; i++) {
+			for (i = 0; i < MAX_TABLES; i++) 
 				pckt_ans->data.ans_check_tables.status[i] = nstatus[i];
-			}
+			
 			break;
 
 		case OCCUPY_TABLE:
-			success = occupy_table(pckt_req->data.req_occupy_table.id);
-			pckt_ans->data.ans_occupy_table.success = success;
+			occupy_table(
+				pckt_req->data.req_occupy_table.id,
+				&(pckt_ans->data.ans_occupy_table.success)
+			);
 			break;
 
 		case FREE_TABLE:
-			success = free_table(pckt_req->data.req_free_table.id);
-			pckt_ans->data.ans_free_table.success = success;
+			free_table(
+				pckt_req->data.req_free_table.id,
+				&(pckt_ans->data.ans_free_table.success)
+			);
 			break;
 
 		case RESERVE_TABLE:
-			success = reserve_table(pckt_req->data.req_reserve_table.id);
-			pckt_ans->data.ans_reserve_table.success = success;
+			reserve_table(
+				pckt_req->data.req_reserve_table.id,
+				&(pckt_ans->data.ans_reserve_table.success)
+			);
 			break;
 
 		default:
@@ -64,9 +72,8 @@ spawn_worker(Packet * pckt_req)
 		printf("Processing command [%d]...\n", pckt_req->opcode);
 		process_request(pckt_req, &pckt_ans);
 
-		sleep(10);
+		sleep(3);
 		pk_send(pckt_req->pid, &pckt_ans, sizeof(pckt_ans));
-		printf("Answer sent.\n");
 	} else if (pid > 0) {
 		// Do nothing, wait not needed because
 		// sigaction set for SIGCHILD

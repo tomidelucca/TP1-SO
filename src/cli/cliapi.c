@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "include/cliapi.h"
+#include "include/server.h"
 #include "include/comm.h"
 
 /**
@@ -27,78 +27,103 @@ create_packet(Packet * pckt, int opcode)
  *
  *	@param	pckt Pointer to the packet to serialize and send to the server
  */
-static void
+static int
 send_client_packet(Packet * pckt)
 {
-	pk_send(SRV_ID, pckt, sizeof *pckt);
+	return pk_send(SRV_ID, pckt, sizeof *pckt);
 }
 
-TableStatus
-check_table(int id)
+int
+check_table(int id, TableStatus *status)
 {
 	Packet pckt_req, pckt_ans;
 	
 	create_packet(&pckt_req, CHECK_TABLE);
 	pckt_req.data.req_check_table.id = id;
 
-	send_client_packet(&pckt_req);
-	pk_receive((int) getpid(), &pckt_ans, sizeof(Packet));
+	if (send_client_packet(&pckt_req) == -1)
+		return -1;
 
-	return pckt_ans.data.ans_check_table.status;
+	if (pk_receive((int) getpid(), &pckt_ans, sizeof(Packet)) == -1)
+		return -1;
+
+	*status = pckt_ans.data.ans_check_table.status;
+
+	return 0;
 }
 
-void
-check_tables(TableStatus * status)
+int
+check_tables(TableStatus *status)
 {
 	Packet pckt_req, pckt_ans;
 
 	create_packet(&pckt_req, CHECK_TABLES);
 
-	send_client_packet(&pckt_req);
-	pk_receive((int) getpid(), &pckt_ans, sizeof(Packet));
+	if (send_client_packet(&pckt_req) == -1)
+		return -1;
+
+	if (pk_receive((int) getpid(), &pckt_ans, sizeof(Packet)) == -1)
+		return -1;
 
 	memcpy(status, pckt_ans.data.ans_check_tables.status,
 			sizeof(TableStatus) * MAX_TABLES);
+	return 0;
 }
 
-bool
-occupy_table(int id)
+int
+occupy_table(int id, bool *success)
 {
 	Packet pckt_req, pckt_ans;
 
 	create_packet(&pckt_req, OCCUPY_TABLE);
 	pckt_req.data.req_occupy_table.id = id;
 
-	send_client_packet(&pckt_req);
-	pk_receive((int) getpid(), &pckt_ans, sizeof(Packet));
+	if (send_client_packet(&pckt_req) == -1)
+		return -1;
+	
+	if (pk_receive((int) getpid(), &pckt_ans, sizeof(Packet)) == -1)
+		return -1;
 
-	return pckt_ans.data.ans_occupy_table.success;
+	*success = pckt_ans.data.ans_occupy_table.success;
+
+	return 0;
 }
 
-bool
-free_table(int id)
+int
+free_table(int id, bool *success)
 {
 	Packet pckt_req, pckt_ans;
 
 	create_packet(&pckt_req, FREE_TABLE);
 	pckt_req.data.req_free_table.id = id;
 
-	send_client_packet(&pckt_req);
-	pk_receive((int) getpid(), &pckt_ans, sizeof(Packet));
+	if (send_client_packet(&pckt_req) == -1)
+		return -1;
 
-	return pckt_ans.data.ans_free_table.success;
+	if (pk_receive((int) getpid(), &pckt_ans, sizeof(Packet)) == -1)
+		return -1;
+
+	*success = pckt_ans.data.ans_free_table.success;
+
+	return 0;
 }
 
-bool
-reserve_table(int id)
+int
+reserve_table(int id, bool *success)
 {
 	Packet pckt_req, pckt_ans;
 
 	create_packet(&pckt_req, RESERVE_TABLE);
 	pckt_req.data.req_reserve_table.id = id;
 
-	send_client_packet(&pckt_req);
-	pk_receive((int) getpid(), &pckt_ans, sizeof(Packet));
+	if (send_client_packet(&pckt_req) == -1)
+		return -1;
 
-	return pckt_ans.data.ans_reserve_table.success;
+	if (pk_receive((int) getpid(), &pckt_ans, sizeof(Packet)) == -1)
+		return -1;
+
+	*success = pckt_ans.data.ans_reserve_table.success;
+
+	return 0;
 }
+

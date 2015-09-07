@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -27,16 +28,25 @@ static struct sockaddr_in srvaddr, cliaddr;
 int
 pk_send(int id, Packet * pckt, int nbytes)
 {
-	int n;
+	int n, len;
+	struct sockaddr * addr;
 
 	UdpPacket udp_pckt;
 	memcpy(&(udp_pckt.pckt), pckt, sizeof(Packet));
 	udp_pckt.checksum = djb2_hash((char *) pckt, sizeof(Packet));	
 
-	if (id == SRV_ID) {// sending from client to server
-		n = sendto(sockfd, &udp_pckt, sizeof udp_pckt, 0, (struct sockaddr *) &srvaddr, sizeof srvaddr);
-	} else {// sending from server to client
-		n = sendto(sockfd, &udp_pckt, sizeof udp_pckt, 0, (struct sockaddr *) &cliaddr, sizeof cliaddr);
+	if (id == SRV_ID) { // sending from client to server
+		addr = (struct sockaddr *) &srvaddr;
+		len = sizeof srvaddr;
+	} else { // sending from server to client
+		addr = (struct sockaddr *) &cliaddr;
+		len = sizeof cliaddr;
+	}
+
+	n = sendto(sockfd, &udp_pckt, sizeof udp_pckt, 0, addr, len);
+	if (n == -1) {
+		printf("Error sending packet.\n");
+		return -1;
 	}
 
 	return n;
@@ -46,15 +56,22 @@ int
 pk_receive(int id, Packet * pckt, int nbytes)
 {
 	int n, len;
+	struct sockaddr * addr;
 
 	UdpPacket udp_pckt;
 	
-	if (id != SRV_ID) { // receiving from the server
+	if (id != SRV_ID) { // client receiving
 		len = sizeof srvaddr;
-		n = recvfrom(sockfd, &udp_pckt, sizeof udp_pckt, 0, (struct sockaddr *) &srvaddr, &len);
-	} else { // receiving from a client
+		addr = (struct sockaddr *) &srvaddr;
+	} else { // server receiving
 		len = sizeof cliaddr;
-		n = recvfrom(sockfd, &udp_pckt, sizeof udp_pckt, 0, (struct sockaddr *) &cliaddr, &len);
+		addr = (struct sockaddr *) &cliaddr;
+	}
+
+	n = recvfrom(sockfd, &udp_pckt, sizeof udp_pckt, 0, addr, &len);
+	if (n == -1) {
+		printf("Error receiving packet.\n");
+		return -1;
 	}
 
 	unsigned long checksum;
@@ -62,7 +79,7 @@ pk_receive(int id, Packet * pckt, int nbytes)
 	if (checksum == udp_pckt.checksum) {
 		memcpy(pckt, &(udp_pckt.pckt), sizeof(Packet));
 	} else {
-		// TODO what should we do when the packet is corrupted?
+		return -1;
 	}
 
 	return n;
@@ -104,6 +121,12 @@ init_client(void)
 	srvaddr.sin_family = AF_INET;
 	srvaddr.sin_port = htons(SRV_PORT);
 	srvaddr.sin_addr.s_addr = inet_addr(SRV_IP);
+
+	struct timeval tv = {
+		.tv_sec = 30,
+		.tv_usec = 0
+	};
+	setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *) &tv, sizeof(tv));
 
 	return 0;
 }

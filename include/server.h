@@ -11,40 +11,48 @@
 /**
  *	Check the status of the table
  *
- *	@param	id ID of the table
- *	@return	The status of the specified table
+ *	@param	id	ID of the table
+ *	@param	status	Out parameter; Table status
+ *	@return 0 if operation was successful, -1 if there was an error	
  */
-TableStatus check_table(int id);
+int check_table(int id, TableStatus *status);
 
 /**
  *	Get the status of all the tables and store them in `status`
  *
- *	@return An array of status
+ *	@param	status	Out parameter; An array of status
+ *	@return 0 if operation was successful, -1 if there was an error	
  */
-void check_tables(TableStatus * status);
+int check_tables(TableStatus *status);
 
 /**
  *	Occupy a table if it's not occupied
  *
- *	@param	id ID of the table
- *	@return	False if the table is already occupied, else true
+ *	@param	id	ID of the table
+ *	@param	success	Out parameter; true if the table is occupied 
+ *			after the operation, else false
+ *	@return 0 if operation was successful, -1 if there was an error	
  */
-bool occupy_table(int id);
+int occupy_table(int id, bool *success);
 
 /**
  *	Free a table already occupied
  *
- *	@param	id ID of the table
- *	@return	TODO
+ *	@param	id	ID of the table
+ *	@param	success	Out parameter; true if the table is free
+ *			after the operation, else false
+ *	@return 0 if operation was successful, -1 if there was an error	
  */
-bool free_table(int id);
+int free_table(int id, bool *success);
 
 /**
  *	Reserve a table whenever it's not already reserved
  *
- *	@param	id ID of the table
- *	@return	False whenever the specified table is already reserved
+ *	@param	id 	ID of the table
+ *	@param success	Out parameter; false if the table is not reserved
+ *			after operation, else true
+ *	@return 0 if operation was successful, -1 if there was an error	
  */
-bool reserve_table(int id);
+int reserve_table(int id, bool *success);
 
 #endif

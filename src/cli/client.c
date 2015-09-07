@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 
-#include "include/cliapi.h"
+#include "include/server.h"
 
 #define WELCOME_MSG			"Insert your command (0 for help): "
 #define SUCCESS_MSG			"Success.\n"
@@ -100,21 +100,33 @@ cli_help(void)
 static void
 cli_check_table(void)
 {
-	int id;
+	int id, s;
+	TableStatus status;
 
 	printf(CHECK_TABLE_MSG);
 	id = read_id();
-	TableStatus status = check_table(id);
+	s = check_table(id, &status);
+
+	if (s == -1) {
+		printf("There was an error checking the table %d.\n", id);
+		return;
+	}
+
 	printf(TABLE_STATUS_MSG, id, status_msg[status]);
 }
 
 static void
 cli_check_tables(void)
 {
-	int i;
+	int i, s;
 	TableStatus status[MAX_TABLES];
 
-	check_tables(status);
+	s = check_tables(status);
+	if (s == -1) {
+		printf("There was an error checking the tables.\n");
+		return;
+	}
+
 	for (i = 0; i < MAX_TABLES; i++)
 		printf(TABLE_STATUS_MSG, i, status_msg[status[i]]);
 }
@@ -122,49 +134,55 @@ cli_check_tables(void)
 static void
 cli_occupy_table(void)
 {
-	int id;
+	int id, s;
 	bool success;
 
 	printf(OCCUPY_TABLE_MSG);
 	id = read_id();
-	success = occupy_table(id);
+	s = occupy_table(id, &success);
+	if (s == -1) {
+		printf("There was an error when occupying table %d.\n", id);
+		return;
+	}
 
-	if (success)
-		printf(SUCCESS_MSG);
-	else
-		printf(ERROR_MSG);
+	if (success) printf(SUCCESS_MSG);
+	else printf(ERROR_MSG);
 }
 
 static void
 cli_free_table(void)
 {
-	int id;
+	int id, s;
 	bool success;
 
 	printf(FREE_TABLE_MSG);
 	id = read_id();
-	success = free_table(id);
+	s = free_table(id, &success);
+	if (s == -1) {
+		printf("There was an error when freeing table %d.\n", id);
+		return;
+	}
 
-	if (success)
-		printf(SUCCESS_MSG);
-	else
-		printf(ERROR_MSG);
+	if (success) printf(SUCCESS_MSG);
+	else printf(ERROR_MSG);
 }
 
 static void
 cli_reserve_table(void)
 {
-	int id;
+	int id, s;
 	bool success;
 
 	printf(RESERVE_TABLE_MSG);
 	id = read_id();
-	success = reserve_table(id);
+	s = reserve_table(id, &success);
+	if (s == -1) {
+		printf("There was an error when reserving table %d.\n", id);
+		return;
+	}
 
-	if (success)
-		printf(SUCCESS_MSG);
-	else
-		printf(ERROR_MSG);
+	if (success) printf(SUCCESS_MSG);
+	else printf(ERROR_MSG);
 }
 
 static void
