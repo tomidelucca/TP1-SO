@@ -15,7 +15,8 @@ static void spawn_worker(Packet *);
 int
 main(void)
 {
-	Packet pckt_req, pckt_ans;
+	ssize_t n;
+	Packet pckt_req;
 
 	struct sigaction sigchld_action = {
 		.sa_handler = SIG_DFL,
@@ -24,11 +25,15 @@ main(void)
 
 	sigaction(SIGCHLD, &sigchld_action, NULL);
 
+	printf("Starting server...\n");
 	init_server();
+	printf("Server started succesfully.\n");
 
 	while (1) {
 		// Receive requests and spawn workers
-		pk_receive(SRV_ID, &pckt_req, sizeof(pckt_req));
+		n = pk_receive(SRV_ID, &pckt_req, sizeof(pckt_req));
+		printf("%d bytes received\n", n);
+
 		spawn_worker(&pckt_req);
 	}
 
@@ -86,7 +91,7 @@ spawn_worker(Packet * pckt_req)
 	int pid = fork();
 	if (pid == 0) {
 		process_request(pckt_req, &pckt_ans);
-		sleep(5);
+		sleep(0);
 		pk_send(pckt_req->pid, &pckt_ans, sizeof(pckt_ans));
 	} else if (pid > 0) {
 		// Do nothing, wait not needed because

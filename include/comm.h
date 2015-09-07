@@ -78,9 +78,9 @@ typedef struct {
  *	@param	id Destinatary of the packet
  *	@param	pckt Packet structure to store serialized bytes
  *	@param	nbytes Amount of bytes to read
- *
+ *	@return	number of bytes received
  */
-void pk_receive(int id, Packet * pckt, int nbytes);
+int pk_receive(int id, Packet * pckt, int nbytes);
 
 /**
  *	Send nbytes of the pckt to process identified by id
@@ -89,9 +89,9 @@ void pk_receive(int id, Packet * pckt, int nbytes);
  *				SRV_ID for the server
  *	@param	pckt Packet structure to store serialized bytes
  *	@param	nbytes Amount of bytes to read
- *
+ *	@return	number of bytes sent
  */
-void pk_send(int id, Packet * pckt, int nbytes);
+int pk_send(int id, Packet * pckt, int nbytes);
 
 /**
  *	Initialize client connection

@@ -24,20 +24,25 @@ static unsigned long djb2_hash(const char *, int);
 static int sockfd;
 static struct sockaddr_in srvaddr, cliaddr;
 
-void
+int
 pk_send(int id, Packet * pckt, int nbytes)
 {
+	int n;
+
 	UdpPacket udp_pckt;
 	memcpy(&(udp_pckt.pckt), pckt, sizeof(Packet));
 	udp_pckt.checksum = djb2_hash((char *) pckt, sizeof(Packet));	
 
-	if (id == SRV_ID) // sending from client to server
-		sendto(sockfd, &udp_pckt, sizeof udp_pckt, 0, (struct sockaddr *) &srvaddr, sizeof srvaddr);
-	else // sending from server to client
-		sendto(sockfd, &udp_pckt, sizeof udp_pckt, 0, (struct sockaddr *) &cliaddr, sizeof cliaddr);
+	if (id == SRV_ID) {// sending from client to server
+		n = sendto(sockfd, &udp_pckt, sizeof udp_pckt, 0, (struct sockaddr *) &srvaddr, sizeof srvaddr);
+	} else {// sending from server to client
+		n = sendto(sockfd, &udp_pckt, sizeof udp_pckt, 0, (struct sockaddr *) &cliaddr, sizeof cliaddr);
+	}
+
+	return n;
 }
 
-void
+int
 pk_receive(int id, Packet * pckt, int nbytes)
 {
 	int n, len;
@@ -58,7 +63,9 @@ pk_receive(int id, Packet * pckt, int nbytes)
 		memcpy(pckt, &(udp_pckt.pckt), sizeof(Packet));
 	} else {
 		// TODO what should we do when the packet is corrupted?
-	}	
+	}
+
+	return n;
 }
 
 void
