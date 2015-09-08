@@ -49,10 +49,12 @@ get_tables(Table *tables)
 	TableStatus table_status;
 	FILE *file;
 
-	file = fopen(DB_PATH, "r");
-	fd = fileno(file);
+	fd = open(DB_PATH, O_RDONLY);
+	file = fdopen(fd, "r");
+
 	rdlock.l_pid = getpid();
 	fcntl(fd, F_SETLKW, &rdlock);
+	sleep(3);
 
 	while (fscanf(file, CSV_TABLE_FORMAT, &table_id, &table_status) != EOF || n < MAX_TABLES) {
 		tables[n].id = table_id;
@@ -75,13 +77,14 @@ static void
 write_tables(Table *tables)
 {
 	int fd, n;
-	FILE * file;
+	FILE *file;
 
-	file = fopen(DB_PATH, "w");
-	fd = fileno(file);
+	fd = open(DB_PATH, O_WRONLY);
+	file = fdopen(fd, "w");
 
 	wrlock.l_pid = getpid();
 	fcntl(fd, F_SETLKW, &wrlock);
+	sleep(3);
 
 	for (n = 0; n < MAX_TABLES; n++)
 		fprintf(file, CSV_TABLE_FORMAT, tables[n].id, tables[n].status);

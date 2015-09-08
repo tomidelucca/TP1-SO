@@ -74,6 +74,7 @@ spawn_worker(Packet * pckt_req)
 
 		sleep(3);
 		pk_send(pckt_req->pid, &pckt_ans, sizeof(pckt_ans));
+		exit(0);
 	} else if (pid > 0) {
 		// Do nothing, wait not needed because
 		// sigaction set for SIGCHILD

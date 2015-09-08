@@ -3,7 +3,7 @@
 
 #include "include/server.h"
 
-#define NOSERVER
+// #define NOSERVER
 
 #define WELCOME_MSG			"Insert your command (0 for help): "
 #define SUCCESS_MSG			"Success.\n"
@@ -13,7 +13,7 @@
 #define CHECK_TABLE_MSG		"Check the table: "
 #define OCCUPY_TABLE_MSG	"Occupy the table: "
 #define FREE_TABLE_MSG		"Free the table: "
-#define RESERVE_TABLE_MSG	"Reserver the table: "
+#define RESERVE_TABLE_MSG	"Reserve the table: "
 
 #define HELP	-1
 
