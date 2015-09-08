@@ -3,6 +3,8 @@
 
 #include "include/server.h"
 
+#define NOSERVER
+
 #define WELCOME_MSG			"Insert your command (0 for help): "
 #define SUCCESS_MSG			"Success.\n"
 #define ERROR_MSG			"Error.\n"
@@ -196,8 +198,10 @@ main()
 	int cmd;
 	
 	// If client communication can't initialize, end client
+#ifndef NOSERVER
 	if (init_client() == -1)
 		return 1;
+#endif
 
 	while (1) {
 		cmd = 0; // default to help
