@@ -17,3 +17,11 @@ fifo_cli:
 
 fifo_srv:
 	gcc -I . src/srv/server.c src/srv/srvapi.c src/comm/fifos/comm.c -o srv
+
+sem: sem_cli sem_srv
+
+sem_cli:
+	gcc -I . src/cli/client.c src/cli/cliapi.c src/comm/semaphores/comm.c -o cli
+
+sem_srv:
+	gcc -I . src/srv/server.c src/srv/srvapi.c src/comm/semaphores/comm.c -o srv
