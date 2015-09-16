@@ -16,8 +16,7 @@ void
 process_request(Packet * pckt_req, Packet * pckt_ans)
 {
 	int i;
-	bool success;
-	TableStatus status, nstatus[MAX_TABLES];
+	TableStatus nstatus[MAX_TABLES];
 
 
 	switch (pckt_req->opcode) {
@@ -106,7 +105,7 @@ main(void)
 	while (1) {
 		// Receive requests and spawn workers
 		n = pk_receive(SRV_ID, &pckt_req, sizeof(pckt_req));
-		printf("%d byte/s received...\n", n);
+		printf("%d byte/s received...\n", (int) n);
 	
 		spawn_worker(&pckt_req);
 	}

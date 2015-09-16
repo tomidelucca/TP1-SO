@@ -56,7 +56,7 @@ get_tables(Table *tables)
 	fcntl(fd, F_SETLKW, &rdlock);
 	sleep(3);
 
-	while (fscanf(file, CSV_TABLE_FORMAT, &table_id, &table_status) != EOF || n < MAX_TABLES) {
+	while (fscanf(file, CSV_TABLE_FORMAT, (int *) &table_id, (int *) &table_status) != EOF || n < MAX_TABLES) {
 		tables[n].id = table_id;
 		tables[n].status = table_status;
 		n++;
