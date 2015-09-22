@@ -18,7 +18,6 @@ process_request(Packet * pckt_req, Packet * pckt_ans)
 	int i;
 	TableStatus nstatus[MAX_TABLES];
 
-
 	switch (pckt_req->opcode) {
 		case CHECK_TABLE:
 			check_table(
@@ -29,9 +28,9 @@ process_request(Packet * pckt_req, Packet * pckt_ans)
 
 		case CHECK_TABLES:
 			check_tables(nstatus);
-			for (i = 0; i < MAX_TABLES; i++) 
+			for (i = 0; i < MAX_TABLES; i++)
 				pckt_ans->data.ans_check_tables.status[i] = nstatus[i];
-			
+
 			break;
 
 		case OCCUPY_TABLE:
@@ -63,7 +62,7 @@ process_request(Packet * pckt_req, Packet * pckt_ans)
 
 static void
 spawn_worker(Packet * pckt_req)
-{	
+{
 	Packet pckt_ans;
 
 	int pid = fork();
@@ -73,6 +72,7 @@ spawn_worker(Packet * pckt_req)
 
 		sleep(3);
 		pk_send(pckt_req->pid, &pckt_ans, sizeof(pckt_ans));
+		printf("Packet sent. [%d byte/s]\n", (int) sizeof(pckt_ans));
 		exit(0);
 	} else if (pid > 0) {
 		// Do nothing, wait not needed because
@@ -95,21 +95,20 @@ main(void)
 	// Avoid having to wait for child processes to exit
 	sigaction(SIGCHLD, &sigchld_action, NULL);
 
-	printf("Starting server...\n");
+	printf("Starting server... ");
 	if (init_server() == -1) {
-		printf("Error initializing server.\n");
+		printf("\x1B[31m[ERROR]\x1B[0m\nError initializing server.\n");
 		return 1;
 	}
-	printf("Server started succesfully.\n");
+	printf("\x1B[32m[OK]\x1B[0m\n");
 
 	while (1) {
 		// Receive requests and spawn workers
 		n = pk_receive(SRV_ID, &pckt_req, sizeof(pckt_req));
 		printf("%d byte/s received...\n", (int) n);
-	
+
 		spawn_worker(&pckt_req);
 	}
 
 	return 0;
 }
-

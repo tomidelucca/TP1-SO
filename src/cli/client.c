@@ -3,13 +3,13 @@
 
 #include "include/server.h"
 
-// #define NOSERVER
+// #define FCNTL
 
 #define WELCOME_MSG			"Insert your command (0 for help): "
-#define SUCCESS_MSG			"Success.\n"
-#define ERROR_MSG			"Error.\n"
-#define TABLE_STATUS_MSG	"Table %d: %s\n"
-#define INVALID_COMMAND_MSG	"Invalid command.\n"
+#define SUCCESS_MSG			"\tSuccess.\n"
+#define ERROR_MSG			"\tError.\n"
+#define TABLE_STATUS_MSG	"\tTable %d: %s\n"
+#define INVALID_COMMAND_MSG	"\tInvalid command.\n\n"
 #define CHECK_TABLE_MSG		"Check the table: "
 #define OCCUPY_TABLE_MSG	"Occupy the table: "
 #define FREE_TABLE_MSG		"Free the table: "
@@ -25,12 +25,12 @@ static const char * status_msg[] = {
 };
 
 static const char * help_msg[6] = {
-	"(0) Help",
-	"(1) Check table status",
-	"(2) Check tables status",
-	"(3) Occupy a table",
-	"(4) Free a table",
-	"(5) Reserve a table",
+	"\t(0) Help",
+	"\t(1) Check table status",
+	"\t(2) Check tables status",
+	"\t(3) Occupy a table",
+	"\t(4) Free a table",
+	"\t(5) Reserve a table",
 };
 
 static int read_id(void);
@@ -97,6 +97,8 @@ cli_help(void)
 
 	for (i = 0; i < n; i++)
 		printf("%s\n", help_msg[i]);
+
+	printf("\n");
 }
 
 static void
@@ -115,6 +117,7 @@ cli_check_table(void)
 	}
 
 	printf(TABLE_STATUS_MSG, id, status_msg[status]);
+	printf("\n");
 }
 
 static void
@@ -131,6 +134,8 @@ cli_check_tables(void)
 
 	for (i = 0; i < MAX_TABLES; i++)
 		printf(TABLE_STATUS_MSG, i, status_msg[status[i]]);
+
+	printf("\n");
 }
 
 static void
@@ -149,6 +154,8 @@ cli_occupy_table(void)
 
 	if (success) printf(SUCCESS_MSG);
 	else printf(ERROR_MSG);
+
+	printf("\n");
 }
 
 static void
@@ -167,6 +174,8 @@ cli_free_table(void)
 
 	if (success) printf(SUCCESS_MSG);
 	else printf(ERROR_MSG);
+
+	printf("\n");
 }
 
 static void
@@ -185,6 +194,8 @@ cli_reserve_table(void)
 
 	if (success) printf(SUCCESS_MSG);
 	else printf(ERROR_MSG);
+
+	printf("\n");
 }
 
 static void
@@ -196,11 +207,15 @@ int
 main()
 {
 	int cmd;
-	
+
+#ifndef FCNTL
 	// If client communication can't initialize, end client
-#ifndef NOSERVER
-	if (init_client() == -1)
+	printf("Initializing client... ");
+	if (init_client() == -1) {
+		printf("\x1B[31m[ERROR]\x1B[0m\nClient couldn't be initialized.\n");
 		return 1;
+	}
+	printf("\x1B[32m[OK]\x1B[0m\n");
 #endif
 
 	while (1) {

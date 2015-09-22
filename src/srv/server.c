@@ -54,7 +54,6 @@ get_tables(Table *tables)
 
 	rdlock.l_pid = getpid();
 	fcntl(fd, F_SETLKW, &rdlock);
-	sleep(3);
 
 	while (fscanf(file, CSV_TABLE_FORMAT, (int *) &table_id, (int *) &table_status) != EOF || n < MAX_TABLES) {
 		tables[n].id = table_id;
@@ -84,7 +83,6 @@ write_tables(Table *tables)
 
 	wrlock.l_pid = getpid();
 	fcntl(fd, F_SETLKW, &wrlock);
-	sleep(3);
 
 	for (n = 0; n < MAX_TABLES; n++)
 		fprintf(file, CSV_TABLE_FORMAT, tables[n].id, tables[n].status);
@@ -99,8 +97,8 @@ int
 check_table(int id, TableStatus * status)
 {
 	Table tables[MAX_TABLES];
-	get_tables(tables);	
-	
+	get_tables(tables);
+
 	if (id >= MAX_TABLES) {
 		return -1;
 	}
@@ -119,7 +117,7 @@ check_tables(TableStatus * status)
 	int n;
 	for (n = 0; n < MAX_TABLES; n++)
 		status[n] = tables[n].status;
-	
+
 	return 0;
 }
 
@@ -128,7 +126,7 @@ occupy_table(int id, bool *success)
 {
 	Table tables[MAX_TABLES];
 	get_tables(tables);
-	
+
 	if (id >= MAX_TABLES) {
 		*success = false;
 		return -1;
@@ -136,9 +134,9 @@ occupy_table(int id, bool *success)
 
 	tables[id].status = OCCUPIED;
 	write_tables(tables);
-		
+
 	*success = true;
-	
+
 	return 0;
 }
 
@@ -155,7 +153,7 @@ free_table(int id, bool *success)
 
 	tables[id].status = AVAILABLE;
 	write_tables(tables);
-	
+
 	*success = true;
 
 	return 0;
