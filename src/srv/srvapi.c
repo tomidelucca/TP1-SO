@@ -10,7 +10,11 @@
 #include "include/server.h"
 #include "include/comm.h"
 
+#define DEFAULT_SLEEP_TIME	5
+
 static void spawn_worker(Packet *);
+
+static int sleep_time = DEFAULT_SLEEP_TIME;
 
 void
 process_request(Packet * pckt_req, Packet * pckt_ans)
@@ -70,7 +74,7 @@ spawn_worker(Packet * pckt_req)
 		printf("Processing command [%d]...\n", pckt_req->opcode);
 		process_request(pckt_req, &pckt_ans);
 
-		sleep(3);
+		sleep(sleep_time);
 		pk_send(pckt_req->pid, &pckt_ans, sizeof(pckt_ans));
 		printf("Packet sent. [%d byte/s]\n", (int) sizeof(pckt_ans));
 		exit(0);
@@ -83,7 +87,7 @@ spawn_worker(Packet * pckt_req)
 }
 
 int
-main(void)
+main(int argc, char *argv[])
 {
 	ssize_t n;
 	Packet pckt_req;
@@ -101,6 +105,12 @@ main(void)
 		return 1;
 	}
 	printf("\x1B[32m[OK]\x1B[0m\n");
+
+	// Assign custom sleep time or default if error or no time specified
+	if (argc == 2 && sscanf(argv[1], "%d", &sleep_time) == 0)
+		sleep_time = DEFAULT_SLEEP_TIME;
+
+	printf("Sleep time set to %d second(s).\n", sleep_time);
 
 	while (1) {
 		// Receive requests and spawn workers
