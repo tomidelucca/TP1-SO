@@ -14,6 +14,27 @@
 static int delete_first_n_bytes(FILE *f, int n, const char* f_path);
 static void signal_handler(int signum);
 
+static struct flock rdlock = {
+	.l_type = F_RDLCK,
+	.l_whence = SEEK_SET,
+	.l_start = 0,
+	.l_len = 0
+};
+
+static struct flock wrlock = {
+	.l_type = F_WRLCK,
+	.l_whence = SEEK_SET,
+	.l_start = 0,
+	.l_len = 0
+};
+
+static struct flock unlock = {
+	.l_type = F_UNLCK,
+	.l_whence = SEEK_SET,
+	.l_start = 0,
+	.l_len = 0
+};
+
 static const char *path_fmt = "/tmp/file_%d.bin";
 static const char *srv_path = "/tmp/file_srv.bin";
 static const char *srv_pid_path = "/tmp/file_srv_pid";
@@ -34,7 +55,16 @@ pk_send(int id, Packet * pckt, int nbytes)
 		fp = fopen(path, "wb");
 	}
 
+	int fd = fileno(fp);
+
+	wrlock.l_pid = getpid();
+	fcntl(fd, F_SETLKW, &wrlock);		// lock file for concurrency
+
 	fwrite(pckt, nbytes, 1, fp);
+
+	unlock.l_pid = getpid();
+	fcntl(fd, F_SETLK, &unlock);		// unlock file
+
 	fclose(fp);
 
 	kill(id, SIGUSR1);
@@ -65,7 +95,15 @@ pk_receive(int id, Packet * pckt, int nbytes)
 		fp = fopen(path, "rb");
 	}
 
+	int fd = fileno(fp);
+
+	rdlock.l_pid = getpid();
+	fcntl(fd, F_SETLKW, &rdlock);	// lock file for concurrency
+
 	fread(pckt, nbytes, 1, fp);
+
+	unlock.l_pid = getpid();
+	fcntl(fd, F_SETLK, &unlock);	// unlock file
 
 	if(id == SRV_ID)
 		delete_first_n_bytes(fp, nbytes, srv_path);
@@ -134,7 +172,15 @@ delete_first_n_bytes(FILE *f, int n, const char* f_path){
 
 	freopen(f_path, "wb", f);
 
+	int fd = fileno(f);
+
+	wrlock.l_pid = getpid();
+	fcntl(fd, F_SETLKW, &wrlock);		// lock file for concurrency
+
 	fwrite(buffer, length-n, 1, f);
+
+	unlock.l_pid = getpid();
+	fcntl(fd, F_SETLK, &unlock);		// unlock file
 
 	return n;
 }

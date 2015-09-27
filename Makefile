@@ -1,6 +1,6 @@
 
 CC=gcc
-CFLAGS=-Wall -lrt -lpthread
+CFLAGS=-Wall  -lpthread
 INCLUDE=-I .
 
 all: client server
