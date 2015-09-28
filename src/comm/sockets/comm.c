@@ -68,7 +68,7 @@ pk_receive(int id, Packet * pckt, int nbytes)
 		addr = (struct sockaddr *) &cliaddr;
 	}
 
-	n = recvfrom(sockfd, &udp_pckt, sizeof udp_pckt, 0, addr, &len);
+	n = recvfrom(sockfd, &udp_pckt, sizeof udp_pckt, 0, addr, (socklen_t *) &len);
 	if (n == -1) {
 		printf("Error receiving packet.\n");
 		return -1;
